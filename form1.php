@@ -1,3 +1,4 @@
+<?php ob_start(); // lets header("Location") work after the page HTML ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,24 +112,20 @@
 </html>
 
 <?php
-$servername = "localhost";
-$username = "root";
-$password = ""; // اتركها فارغة إذا لم يكن هناك كلمة مرور
-$dbname = "competitiondb";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once __DIR__ . '/config.php';
+$conn = db_connect();
+$error = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $first_name = $_POST['first_name'];
-    $second_name = $_POST['second_name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $password = $_POST['password'];
-    $group_or_single = $_POST['group_or_single'];
+    $first_name = trim($_POST['first_name'] ?? '');
+    $second_name = trim($_POST['second_name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $password2 = $_POST['password2'] ?? '';
+    $group_or_single = ($_POST['group_or_single'] ?? '') === 'group' ? 'group' : 'single';
+    // Store only a salted hash (bcrypt by default), never the password itself.
+    $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
     // التحقق من تكرار البريد الإلكتروني
     $check_query = "SELECT * FROM registrations WHERE email = ?";
@@ -137,20 +134,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_check->execute();
     $result_check = $stmt_check->get_result();
 
-    if ($result_check->num_rows > 0) {
+    if ($first_name === '' || $email === '' || $password === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "يرجى إدخال الاسم وبريد إلكتروني صحيح وكلمة مرور.";
+    } elseif ($password !== $password2) {
+        echo "كلمتا المرور غير متطابقتين.";
+    } elseif ($result_check->num_rows > 0) {
         echo "البريد الإلكتروني مستخدم بالفعل. يرجى استخدام بريد إلكتروني آخر.";
     } else {
         // إدخال البيانات إلى قاعدة البيانات
         $insert_query = "INSERT INTO registrations (first_name, second_name, email, phone, password, group_or_single) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt_insert = $conn->prepare($insert_query);
-        $stmt_insert->bind_param("ssssss", $first_name, $second_name, $email, $phone, $password, $group_or_single);
+        $stmt_insert->bind_param("ssssss", $first_name, $second_name, $email, $phone, $password_hash, $group_or_single);
 
         if ($stmt_insert->execute()) {
             // توجيه إلى الصفحة المناسبة بناءً على اختيار المستخدم
             if ($group_or_single == "group") {
-                header("Location: http://localhost/comp/group.php");
+                header("Location: group.php");
             } else {
-                header("Location: http://localhost/malak ahmed task2/Competitions.php");
+                header("Location: Competitions.php");
             }
             exit();
         } else {
