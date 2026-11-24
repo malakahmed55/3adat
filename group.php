@@ -1,3 +1,4 @@
+<?php ob_start(); // lets header("Location") work after the page HTML ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,12 +92,8 @@
             if (empty($teamName)) {
                 $errorMessage = "Please enter a team name.";
             } else {
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $dbname = "competitiondb";
-
-                $conn = new mysqli($servername, $username, $password, $dbname);
+                require_once __DIR__ . '/config.php';
+                $conn = db_connect();
 
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
@@ -121,7 +118,7 @@
                     }
 
                     // التوجيه لصفحة اختيار المنافسات بعد التسجيل الناجح
-                    header("Location: choose_competitions.php?teamID=$teamID");
+                    header("Location: Competitions.php");
                     exit();
                 } else {
                     echo "Error: Could not register team.";
@@ -164,7 +161,7 @@
                 <input type="text" name="member5" placeholder="Enter member 5 name" value="<?php echo htmlspecialchars($member5); ?>">
             </div>
             <div class="form-group">
-            <a href="http://localhost/comp/Competitions.php" style="display: inline-block; padding: 15px 30px; color: #fff; background-color: #3A6EA5; text-align: center; border-radius: 6px; text-decoration: none; font-size: 1rem; font-weight: 400; transition: all 0.2s ease;">reguster group</a>
+            <a href="Competitions.php" style="display: inline-block; padding: 15px 30px; color: #fff; background-color: #3A6EA5; text-align: center; border-radius: 6px; text-decoration: none; font-size: 1rem; font-weight: 400; transition: all 0.2s ease;">reguster group</a>
 
             </div>
         </form>
