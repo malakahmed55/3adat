@@ -262,7 +262,8 @@
 
     <?php
 // Connect to the database
-$conn = new mysqli('localhost', 'root', '', 'competitiondb'); // Replace with your DB details
+require_once __DIR__ . '/config.php';
+$conn = db_connect();
 
 // Check connection
 if ($conn->connect_error) {
