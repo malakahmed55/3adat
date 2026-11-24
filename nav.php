@@ -126,9 +126,9 @@
   <div>
     <nav class="navbar navbar-expand-lg">
       <ul>
-        <li><a href='http://localhost/%D8%A7%D8%B9%D8%AA%D9%85%D8%A7%D8%AF/home.php'>Home</a></li>
-        <li><a href='http://localhost/%D8%A7%D8%B9%D8%AA%D9%85%D8%A7%D8%AF/form1.php'>Sign In</a></li>
-        <li><a href='http://localhost/%d8%a7%d8%b9%d8%aa%d9%85%d8%a7%d8%af/Competitions.php'>Competitions</a></li>
+        <li><a href='home.php'>Home</a></li>
+        <li><a href='form1.php'>Sign In</a></li>
+        <li><a href='Competitions.php'>Competitions</a></li>
       </ul>
     </nav>
   </div>
