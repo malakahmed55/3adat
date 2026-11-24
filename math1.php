@@ -135,13 +135,10 @@
         </form>
         <?php
 // إعدادات قاعدة البيانات
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "competitiondb";
+require_once __DIR__ . '/config.php';
 
 // الاتصال بقاعدة البيانات
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = db_connect();
 
 // التحقق من الاتصال
 if ($conn->connect_error) {
@@ -206,7 +203,7 @@ $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     echo "<h2>All Participants' Results:</h2>";
     while ($row = $result->fetch_assoc()) {
-        echo "<p>{$row['ParticipantName']}: Score - {$row['Score']}, Result - {$row['Result']}</p>";
+        echo "<p>" . e($row['ParticipantName']) . ": Score - " . (int) $row['Score'] . ", Result - " . e($row['Result']) . "</p>";
     }
 }
 
