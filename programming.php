@@ -167,13 +167,10 @@
     </form>
     <?php
 // إعداد الاتصال بقاعدة البيانات
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "competitiondb";
+require_once __DIR__ . '/config.php';
 
 // إنشاء الاتصال
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = db_connect();
 
 // التحقق من الاتصال
 if ($conn->connect_error) {
