@@ -252,7 +252,8 @@
     </div>
     <?php
 // Database connection
-$conn = new mysqli("localhost", "root", "", "competitiondb"); // Adjust username and password accordingly
+require_once __DIR__ . '/config.php';
+$conn = db_connect();
 
 // Check connection
 if ($conn->connect_error) {
@@ -262,7 +263,7 @@ if ($conn->connect_error) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Prepare variables for score calculation
     $score = 0;
-    $participant_name = $conn->real_escape_string($_POST['participant_name']);
+    $participant_name = trim($_POST['participant_name'] ?? '');
 
     // Correct answers
     $correct_answers = [
@@ -296,12 +297,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Insert results into the database
-    $sql = "INSERT INTO history_results (participant_name, score) VALUES ('$participant_name', $score)";
-    if ($conn->query($sql) === TRUE) {
-        echo "<div class='result'>Thank you, $participant_name! Your score is: $score out of 20.</div>";
+    $stmt = $conn->prepare("INSERT INTO history_results (participant_name, score) VALUES (?, ?)");
+    $stmt->bind_param("si", $participant_name, $score);
+    if ($participant_name !== '' && $stmt->execute()) {
+        echo "<div class='result'>Thank you, " . e($participant_name) . "! Your score is: $score out of 20.</div>";
     } else {
-        echo "<div class='result'>Error: " . $sql . "<br>" . $conn->error . "</div>";
+        error_log('history insert failed: ' . $stmt->error);
+        echo "<div class='result'>Sorry, your result could not be saved.</div>";
     }
+    $stmt->close();
 }
 
 // Display all results

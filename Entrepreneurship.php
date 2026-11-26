@@ -141,7 +141,7 @@
         <select name="q6">
             <option value="Starting a business with minimal resources">Starting a business with minimal resources</option>
             <option value="Using venture capital to scale rapidly">Using venture capital to scale rapidly</option>
-            <option value="Hiring without raising funds">Hiring without raising funds</option>
+            <option value="Selling the company to a larger firm">Selling the company to a larger firm</option>
             <option value="Filing for bankruptcy">Filing for bankruptcy</option>
         </select>
 
@@ -153,7 +153,7 @@
             <option value="Larry Page">Larry Page</option>
         </select>
 
-        <p>8. In which year did Google launch?</p>
+        <p>8. In which year was Google founded?</p>
         <select name="q8">
             <option value="1998">1998</option>
             <option value="2000">2000</option>
@@ -193,15 +193,15 @@
             <option value="A contract with a VC firm">A contract with a VC firm</option>
         </select>
 
-        <p>13. What is the term for a company's first round of funding?</p>
+        <p>13. Which funding round usually comes first, before Series A?</p>
         <select name="q13">
             <option value="Seed funding">Seed funding</option>
             <option value="Series A">Series A</option>
             <option value="IPO">IPO</option>
-            <option value="Angel round">Angel round</option>
+            <option value="Series B">Series B</option>
         </select>
 
-        <p>14. What is the name of the stock exchange where most tech companies are listed?</p>
+        <p>14. Alphabet (Google) shares trade under the ticker GOOGL on which stock exchange?</p>
         <select name="q14">
             <option value="NASDAQ">NASDAQ</option>
             <option value="NYSE">NYSE</option>
@@ -217,12 +217,12 @@
             <option value="Larry Page">Larry Page</option>
         </select>
 
-        <p>16. What is the primary goal of a startup?</p>
+        <p>16. According to Paul Graham, what is the essential thing that defines a startup?</p>
         <select name="q16">
-            <option value="To grow rapidly and capture market share">To grow rapidly and capture market share</option>
-            <option value="To maintain a steady profit">To maintain a steady profit</option>
-            <option value="To hire the best talent">To hire the best talent</option>
-            <option value="To build a strong brand">To build a strong brand</option>
+            <option value="Rapid growth">Rapid growth</option>
+            <option value="Steady profit">Steady profit</option>
+            <option value="Hiring the best talent">Hiring the best talent</option>
+            <option value="A strong brand">A strong brand</option>
         </select>
 
         <p>17. What does it mean to pivot a business model?</p>
@@ -262,7 +262,55 @@
 
     <?php
 // Connect to the database
-$conn = new mysqli('localhost', 'root', '', 'competitiondb'); // Replace with your DB details
+require_once __DIR__ . '/config.php';
+$conn = db_connect();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim((string) ($_POST['username'] ?? ''));
+    $correct_answers = array(
+        'q1' => 'Jeff Bezos',
+        'q2' => 'Minimum Viable Product',
+        'q3' => '1976',
+        'q4' => 'Elon Musk',
+        'q5' => 'Y Combinator',
+        'q6' => 'Starting a business with minimal resources',
+        'q7' => 'Mark Zuckerberg',
+        'q8' => '1998',
+        'q9' => 'A document that outlines a company\'s goals and strategies',
+        'q10' => 'An investor who provides capital for a startup in exchange for ownership equity',
+        'q11' => 'Paul Allen',
+        'q12' => 'A presentation used to pitch a business idea to investors',
+        'q13' => 'Seed funding',
+        'q14' => 'NASDAQ',
+        'q15' => 'Elon Musk',
+        'q16' => 'Rapid growth',
+        'q17' => 'To change the direction of a startup\'s business strategy',
+        'q18' => 'Funding provided to startups in exchange for equity',
+        'q19' => 'To understand the competitive landscape and target audience',
+        'q20' => 'To grow a business quickly without a proportional increase in costs'
+    );
+    $total = count($correct_answers);
+    $pass_mark = 14;
+    $score = 0;
+    foreach ($correct_answers as $question => $correct_answer) {
+        if (isset($_POST[$question]) && $_POST[$question] === $correct_answer) {
+            $score++;
+        }
+    }
+    $passed = $score >= $pass_mark ? 1 : 0;
+
+    echo "<h2 style='text-align:center;'>Your score: " . $score . " out of " . $total . "</h2>";
+    if ($passed) {
+        echo "<h3 style='color: green; text-align:center;'>Congratulations! You passed the quiz.</h3>";
+    } else {
+        echo "<h3 style='color: red; text-align:center;'>Sorry, you did not pass (pass mark is " . $pass_mark . " of " . $total . "). Better luck next time!</h3>";
+    }
+
+    $save = $conn->prepare("INSERT INTO entership (username, score, passed) VALUES (?, ?, ?)");
+    $save->bind_param("sii", $username, $score, $passed);
+    $save->execute();
+    $save->close();
+}
 
 // Check connection
 if ($conn->connect_error) {

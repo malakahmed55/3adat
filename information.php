@@ -167,13 +167,10 @@
         </div>
     </form>
     <?php
-$servername = "localhost"; // عنوان الخادم
-$username = "root";        // اسم المستخدم
-$password = "";            // كلمة المرور
-$dbname = "competitiondb"; // اسم قاعدة البيانات
+require_once __DIR__ . '/config.php';
 
 // إنشاء اتصال بقاعدة البيانات
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = db_connect();
 
 // التحقق من الاتصال
 if ($conn->connect_error) {
@@ -221,7 +218,7 @@ if ($conn->connect_error) {
 
 
 // Fetch and display results from the database
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = db_connect();
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }

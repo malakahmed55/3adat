@@ -21,7 +21,7 @@ Entrepreneurship
 <br>
 General information</h5>
 click here to start👇
-<a href="http://localhost/comp/form1.php">
+<a href="form1.php">
     <img style="            width: 100%;
             height: 300px; /* يخلي الصورة تحافظ على نسبة العرض والارتفاع */
 " src="WhatsApp Image 2024-10-11 at 11.05.10 PM.jpeg">
